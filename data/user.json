@@ -1,0 +1,10 @@
+{
+  "name": "Người học mới",
+  "email": "hocvien@example.com",
+  "phone": "0912345678",
+  "avatar": "/static/uploads/unnamed.jpg",
+  "streak": 1,
+  "xp": 0,
+  "theme": "dark",
+  "notifications": true
+}

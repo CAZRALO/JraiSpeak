@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Bài 1: Lời chào đầu tiên",
+    "desc": "Học cách chào hỏi và giới thiệu tên cơ bản.",
+    "content": "Trong văn hóa Jrai, lời chào rất quan trọng.\n\n1. Chào hỏi: 'Hiam' có nghĩa là Tốt/Đẹp, thường dùng để chào.\n   - Ví dụ: 'Hiam!' (Chào bạn!)\n\n2. Hỏi thăm: 'Ih bơ ngot hiam?' (Bạn có khỏe không?)\n\n3. Giới thiệu tên: 'Kâo anai [Tên]...' (Tôi tên là...)"
+  },
+  {
+    "id": 2,
+    "title": "Bài 2: Gia đình thân yêu",
+    "desc": "Từ vựng về các thành viên trong gia đình.",
+    "content": "Gia đình trong tiếng Jrai gọi là 'Sang ană'.\n\n- Ama: Cha\n- Amĭ: Mẹ\n- Ayong: Anh trai\n- Amaï: Chị gái\n- Adơi: Em (trai/gái)\n- Mơni: Bà\n- Ơi: Ông\n\nVí dụ: 'Ama kâo' (Bố của tôi)."
+  },
+  {
+    "id": 3,
+    "title": "Bài 3: Số đếm (1-10)",
+    "desc": "Học đếm số cơ bản để đi chợ hoặc nói tuổi.",
+    "content": "Hãy tập đếm từ 1 đến 10:\n1. Sa\n2. Dua\n3. Klâu\n4. Pă\n5. Rơma\n6. Năm\n7. Tơjuh\n8. Rơpăn\n9. Dua rơpan\n10. Pluh"
+  },
+  {
+    "id": 4,
+    "title": "Bài 4: Đại từ nhân xưng",
+    "desc": "Cách xưng hô Tôi, Bạn, Nó trong tiếng Jrai.",
+    "content": "Cách xưng hô rất quan trọng:\n- Kâo: Tôi (ngôi thứ 1)\n- Ih: Bạn, mày (ngôi thứ 2)\n- Ñu: Nó, anh ấy, cô ấy (ngôi thứ 3)\n- Gơmơi: Chúng tôi (không bao gồm người nghe)\n- Ta: Chúng ta (bao gồm người nghe)\n\nVí dụ: 'Kâo khăp ih' (Tôi mến bạn)."
+  },
+  {
+    "id": 5,
+    "title": "Bài 5: Các bộ phận cơ thể",
+    "desc": "Học tên các bộ phận trên cơ thể người.",
+    "content": "- Ako: Đầu\n- Mata: Mắt\n- Tơngia: Tai\n- Muih: Mũi\n- Abô: Miệng\n- Tơgang: Tay\n- Jơng: Chân\n\nVí dụ: 'Mata hiam' (Đôi mắt đẹp)."
+  }
+]

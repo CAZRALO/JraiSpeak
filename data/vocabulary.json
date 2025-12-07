@@ -1,0 +1,86 @@
+[
+  {
+    "jrai": "Kơkuh",
+    "viet": "Chào, Xin chào",
+    "type": "Động từ",
+    "pronounce": "/kơ-kuh/",
+    "example": "Kơkuh ơi! (Chào ông!)"
+  },
+  {
+    "jrai": "Ama",
+    "viet": "Cha, Bố",
+    "type": "Danh từ",
+    "pronounce": "/a-ma/",
+    "example": "Dua anak ama. (Hai cha con.)"
+  },
+  {
+    "jrai": "Amĭ",
+    "viet": "Mẹ, Má",
+    "type": "Danh từ",
+    "pronounce": "/a-mi/",
+    "example": "Khăp amĭ lu. (Yêu mẹ nhiều.)"
+  },
+  {
+    "jrai": "Ană",
+    "viet": "Con, Con cái",
+    "type": "Danh từ",
+    "pronounce": "/a-nă/",
+    "example": "Ană plơi juat pla get. (Bà con dân làng quen trồng bầu.)"
+  },
+  {
+    "jrai": "Sang",
+    "viet": "Nhà",
+    "type": "Danh từ",
+    "pronounce": "/sang/",
+    "example": "Sang kâo dơ̆ng anai. (Nhà tôi ở đây.)"
+  },
+  {
+    "jrai": "Ao",
+    "viet": "Áo",
+    "type": "Danh từ",
+    "pronounce": "/ao/",
+    "example": "Tơchôh ao. (May áo.)"
+  },
+  {
+    "jrai": "Ia",
+    "viet": "Nước",
+    "type": "Danh từ",
+    "pronounce": "/ia/",
+    "example": "Ia rô gơgruk. (Nước chảy ào ạt.)"
+  },
+  {
+    "jrai": "Hơjan",
+    "viet": "Mưa",
+    "type": "Danh từ",
+    "pronounce": "/hơ-jan/",
+    "example": "Hơjan prong biă. (Mưa rất to.)"
+  },
+  {
+    "jrai": "Bơnga",
+    "viet": "Hoa",
+    "type": "Danh từ",
+    "pronounce": "/bơ-nga/",
+    "example": "Bơnga črih. (Hoa đỏ.)"
+  },
+  {
+    "jrai": "Dlai",
+    "viet": "Rừng",
+    "type": "Danh từ",
+    "pronounce": "/d-lai/",
+    "example": "Nao amăng dlai. (Đi vào trong rừng.)"
+  },
+  {
+    "jrai": "Dua",
+    "viet": "Hai (số 2)",
+    "type": "Số từ",
+    "pronounce": "/dua/",
+    "example": "Dua chô ană. (Hai đứa con.)"
+  },
+  {
+    "jrai": "Sa",
+    "viet": "Một (số 1)",
+    "type": "Số từ",
+    "pronounce": "/sa/",
+    "example": "Sa, dua, klâo. (Một, hai, ba.)"
+  }
+]
