@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Tiếng Jrai</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#D97706',
+                        secondary: '#92400E',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 14px; /* Giảm padding một chút cho gọn */
+            border-radius: 18px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        .lesson-content { line-height: 1.8; font-size: 1.1rem; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 h-screen overflow-hidden flex flex-col">
+
+    <div id="app" class="flex flex-col h-full max-w-7xl mx-auto bg-white dark:bg-gray-800 shadow-2xl relative w-full">
+        
+        <!-- HEADER (Đã chỉnh sửa: Streak gọn gàng bên phải) -->
+        <header class="bg-primary text-white p-3 flex justify-between items-center shadow-md z-20">
+            <h1 class="text-lg font-bold flex items-center gap-2 pl-2">
+                <i class="fa-solid fa-book-open"></i> Jrai Learning
+            </h1>
+            
+            <!-- Khu vực Stats gọn gàng -->
+            <div class="flex items-center gap-3 text-sm font-medium pr-2">
+                <!-- Streak Compact -->
+                <div class="flex items-center gap-1 bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm" title="Chuỗi ngày học liên tiếp">
+                    <i class="fa-solid fa-fire text-yellow-300 animate-pulse"></i> 
+                    <span>{{ user.streak }}</span>
+                </div>
+                
+                <!-- XP -->
+                <div class="flex items-center gap-1 text-orange-100">
+                    <span>{{ user.xp }} XP</span>
+                </div>
+
+                <!-- Avatar -->
+                <img :src="user.avatar" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm">
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 md:p-6 relative bg-gray-50 dark:bg-gray-900/50 flex flex-col">
+            
+            <!-- TAB: TRANG CHỦ -->
+            <div v-if="currentTab === 'home'" class="space-y-4 max-w-4xl mx-auto w-full">
+                <h2 class="text-xl font-bold mb-4 text-primary">Lộ trình học</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div v-for="lesson in lessons" :key="lesson.id" 
+                        class="bg-white dark:bg-gray-700 p-5 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-l-4 border-primary flex flex-col justify-between group"
+                        @click="openLesson(lesson)">
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 group-hover:text-primary transition">{{ lesson.title }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-300">{{ lesson.desc }}</p>
+                        </div>
+                        <button class="mt-4 text-xs bg-primary text-white px-4 py-2 rounded-full w-max hover:bg-secondary transition font-bold shadow">Bắt đầu</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: BẢNG CHỮ CÁI -->
+            <div v-if="currentTab === 'alphabet'" class="max-w-5xl mx-auto w-full">
+                <h2 class="text-xl font-bold mb-4 text-primary">Bảng chữ cái Jrai</h2>
+                <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                    <div v-for="char in alphabet" :key="char.char" 
+                         class="bg-white dark:bg-gray-700 p-3 rounded-lg text-center border-b-4 border-orange-200 dark:border-gray-600 hover:border-primary transition cursor-pointer shadow-sm group hover:-translate-y-1">
+                        <div class="text-2xl font-bold text-primary group-hover:scale-110 transition">{{ char.char }}</div>
+                        <div class="text-[10px] text-gray-500 italic mt-1">/{{ char.pronounce }}/</div>
+                        <div class="text-[10px] mt-1 font-medium text-gray-700 dark:text-gray-300 truncate">{{ char.example }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: TỪ ĐIỂN -->
+            <div v-if="currentTab === 'dictionary'" class="max-w-3xl mx-auto w-full">
+                <h2 class="text-xl font-bold mb-4 text-primary">Từ điển Jrai - Việt</h2>
+                <div class="relative mb-6 sticky top-0 z-10 bg-gray-50 dark:bg-gray-900 py-2">
+                    <input type="text" v-model="searchQuery" placeholder="Nhập từ cần tra..." 
+                           class="w-full p-3 pl-10 rounded-xl border shadow-sm dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary transition">
+                    <i class="fa-solid fa-search absolute left-3 top-5 text-gray-400"></i>
+                </div>
+                <div class="space-y-3">
+                    <div v-for="word in filteredDictionary" :key="word.jrai" 
+                         class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm border-l-4 border-gray-300 hover:border-primary transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-bold text-lg text-primary">{{ word.jrai }}</span>
+                                <span class="text-xs text-gray-500 ml-2 italic">{{ word.pronounce }}</span>
+                            </div>
+                            <span class="text-[10px] bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded font-bold uppercase text-gray-500 dark:text-gray-300">{{ word.type }}</span>
+                        </div>
+                        <p class="mt-1 text-base font-medium">{{ word.viet }}</p>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 border-t pt-2 border-dashed flex items-center">
+                            <i class="fa-solid fa-quote-left mr-2 text-gray-300"></i> {{ word.example }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: CHATBOT (Đã tối ưu không gian hiển thị) -->
+            <div v-if="currentTab === 'chatbot'" class="flex flex-col h-full max-w-2xl mx-auto w-full">
+                <!-- Đã xóa banner Header to để tiết kiệm diện tích -->
+                
+                <!-- Khu vực tin nhắn: flex-1 để chiếm toàn bộ chiều cao còn lại -->
+                <div class="flex-1 overflow-y-auto mb-2 space-y-2 pr-1 pl-1" ref="chatBox">
+                    <!-- Tin nhắn chào mừng mặc định nếu chưa có lịch sử -->
+                    <div v-if="chatHistory.length === 0" class="text-center text-gray-400 text-sm mt-10">
+                        <i class="fa-solid fa-robot text-4xl mb-2 text-gray-300"></i>
+                        <p>Bắt đầu trò chuyện với AI Jrai ngay!</p>
+                    </div>
+
+                    <div v-for="(msg, index) in chatHistory" :key="index" 
+                         :class="['chat-bubble text-sm shadow-sm animate-fade-in', msg.role === 'user' ? 'bg-primary text-white self-end ml-auto' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white mr-auto border border-gray-200 dark:border-gray-600']">
+                        <div v-if="msg.role === 'model'" v-html="formatMarkdown(msg.parts[0].text)"></div>
+                        <div v-else>{{ msg.parts[0].text }}</div>
+                        
+                        <div v-if="msg.error" class="text-xs text-red-200 mt-1 italic flex items-center gap-1">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ msg.error }}
+                        </div>
+                    </div>
+                    
+                    <div v-if="isTyping" class="text-xs text-gray-500 italic ml-2 flex items-center gap-1 mb-2">
+                        <div class="flex space-x-1">
+                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                        </div>
+                        <span>AI đang soạn...</span>
+                    </div>
+                </div>
+
+                <!-- Input Area: Sticky bottom -->
+                <div class="flex gap-2 mt-auto bg-white dark:bg-gray-800 p-2 rounded-xl shadow-lg border dark:border-gray-600 sticky bottom-0 z-10">
+                    <input type="text" v-model="chatInput" @keyup.enter="sendMessage" 
+                           placeholder="Nhập tin nhắn..." 
+                           :disabled="isTyping"
+                           class="flex-1 bg-transparent focus:outline-none text-gray-800 dark:text-white px-3 py-1 text-sm">
+                    <button @click="sendMessage" :disabled="isTyping || !chatInput.trim()"
+                            :class="['w-9 h-9 rounded-full flex items-center justify-center transition shadow-md', chatInput.trim() ? 'bg-primary text-white hover:bg-secondary' : 'bg-gray-200 text-gray-400 cursor-not-allowed']">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB: THƯ VIỆN -->
+            <div v-if="currentTab === 'library'" class="max-w-4xl mx-auto w-full">
+                <div class="flex gap-6 mb-4 border-b dark:border-gray-600 pb-1">
+                    <button @click="libTab = 'text'" :class="['font-bold text-base pb-1 transition', libTab === 'text' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600']">Truyện đọc</button>
+                    <button @click="libTab = 'audio'" :class="['font-bold text-base pb-1 transition', libTab === 'audio' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600']">Audio</button>
+                </div>
+
+                <div v-if="libTab === 'text'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div v-for="story in library.text" :key="story.id" class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm hover:shadow-md transition">
+                        <h3 class="font-bold text-lg mb-2 text-primary">{{ story.title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-4 mb-3 leading-relaxed">{{ story.content }}</p>
+                        <button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">Đọc tiếp <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div v-if="libTab === 'audio'" class="space-y-3">
+                    <div v-for="audio in library.audio" :key="audio.id" class="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm flex items-center gap-3 border border-transparent hover:border-orange-200 transition">
+                        <div class="w-10 h-10 bg-orange-100 text-primary rounded-full flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-music"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-sm">{{ audio.title }}</h3>
+                            <p class="text-[10px] text-gray-500">{{ audio.duration }}</p>
+                        </div>
+                        <button class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center hover:scale-110 transition"><i class="fa-solid fa-play text-xs"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: TÀI KHOẢN -->
+            <div v-if="currentTab === 'account'" class="space-y-4 max-w-lg mx-auto w-full">
+                <div class="flex flex-col items-center py-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                    <div class="relative group">
+                        <img :src="user.avatar" class="w-24 h-24 rounded-full object-cover border-4 border-primary shadow-lg">
+                        <label class="absolute bottom-0 right-0 bg-white text-gray-800 p-1.5 rounded-full cursor-pointer hover:bg-gray-100 shadow border">
+                            <i class="fa-solid fa-camera text-xs"></i>
+                            <input type="file" @change="handleFileUpload" class="hidden" accept="image/*">
+                        </label>
+                    </div>
+                    <h2 class="text-xl font-bold mt-3">{{ user.name }}</h2>
+                    <p class="text-gray-500 text-sm">{{ user.email }}</p>
+                </div>
+                <!-- Settings -->
+                <div class="bg-white dark:bg-gray-700 rounded-xl shadow-sm border dark:border-gray-600 overflow-hidden text-sm">
+                     <div class="p-4 border-b dark:border-gray-600 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600" @click="toggleEdit">
+                        <span><i class="fa-solid fa-user-pen mr-3 text-gray-400 w-5"></i> Sửa thông tin</span>
+                        <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                    </div>
+                    <div class="p-4 border-b dark:border-gray-600 flex justify-between items-center">
+                        <span><i class="fa-solid fa-moon mr-3 text-gray-400 w-5"></i> Giao diện tối</span>
+                        <button @click="toggleTheme" :class="['w-10 h-5 rounded-full p-0.5 transition', user.theme === 'dark' ? 'bg-primary' : 'bg-gray-300']">
+                            <div :class="['bg-white w-4 h-4 rounded-full shadow-md transform transition', user.theme === 'dark' ? 'translate-x-5' : '']"></div>
+                        </button>
+                    </div>
+                    <div class="p-4 text-red-500 cursor-pointer flex items-center hover:bg-red-50 dark:hover:bg-red-900/20" @click="logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-3 w-5"></i> Đăng xuất
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL BÀI HỌC -->
+            <div v-if="activeLesson" class="absolute inset-0 bg-white dark:bg-gray-800 z-50 flex flex-col animate-fade-in">
+                <div class="bg-primary text-white p-3 shadow flex justify-between items-center sticky top-0 z-50">
+                    <h2 class="text-lg font-bold truncate pr-4">{{ activeLesson.title }}</h2>
+                    <button @click="activeLesson = null" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-5 md:p-8 max-w-4xl mx-auto w-full">
+                    <div class="lesson-content text-gray-800 dark:text-gray-200" v-html="formatMarkdown(activeLesson.content)"></div>
+                </div>
+                <div class="p-3 bg-gray-50 dark:bg-gray-900 border-t dark:border-gray-700 sticky bottom-0">
+                    <button @click="finishLesson" class="w-full max-w-sm mx-auto block bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl font-bold shadow-lg transition transform active:scale-95 text-sm">
+                        Hoàn thành (+10 XP)
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- NAVIGATION -->
+        <nav class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around md:justify-center md:gap-8 p-1.5 pb-safe shadow-inner z-40">
+            <button v-for="tab in ['home', 'alphabet', 'dictionary', 'chatbot', 'library', 'account']" 
+                    :key="tab" @click="currentTab = tab" 
+                    :class="['flex flex-col items-center p-1.5 rounded-lg transition min-w-[55px]', currentTab === tab ? 'text-primary font-bold bg-orange-50 dark:bg-gray-700' : 'text-gray-400 hover:text-gray-600']">
+                <i :class="['fa-solid text-lg mb-0.5', {'home': 'fa-house', 'alphabet': 'fa-font', 'dictionary': 'fa-book', 'chatbot': 'fa-message', 'library': 'fa-layer-group', 'account': 'fa-user'}[tab]]"></i>
+                <span class="text-[9px] uppercase tracking-wide">{{ {'home': 'Trang chủ', 'alphabet': 'Chữ cái', 'dictionary': 'Từ điển', 'chatbot': 'Chat AI', 'library': 'Thư viện', 'account': 'Tài khoản'}[tab] }}</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, reactive, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                const currentTab = ref('home');
+                const libTab = ref('text');
+                const searchQuery = ref('');
+                const chatInput = ref('');
+                const isTyping = ref(false);
+                const activeLesson = ref(null);
+                const isEditing = ref(false);
+                const chatBox = ref(null); 
+                
+                const alphabet = ref([]);
+                const dictionary = ref([]);
+                const lessons = ref([]);
+                const library = ref({ text: [], audio: [] });
+                const user = ref({});
+                const editForm = reactive({});
+
+                const chatHistory = ref([
+                    { role: 'model', parts: [{ text: "Xin chào! Tôi là trợ lý Jrai. Tôi có thể giúp gì cho bạn?" }] }
+                ]);
+
+                onMounted(async () => {
+                    try {
+                        const res = await fetch('/api/data');
+                        const data = await res.json();
+                        alphabet.value = data.alphabet || [];
+                        dictionary.value = data.dictionary || [];
+                        lessons.value = data.lessons || [];
+                        library.value = data.library || { text: [], audio: [] };
+                        user.value = data.user || {};
+                        if (user.value.theme === 'dark') document.documentElement.classList.add('dark');
+                    } catch (e) { console.error("Lỗi data", e); }
+                });
+
+                const filteredDictionary = computed(() => {
+                    if (!searchQuery.value) return dictionary.value;
+                    const q = searchQuery.value.toLowerCase();
+                    return dictionary.value.filter(w => w.jrai.toLowerCase().includes(q) || w.viet.toLowerCase().includes(q));
+                });
+
+                const scrollToBottom = () => {
+                    nextTick(() => {
+                        if (chatBox.value) chatBox.value.scrollTop = chatBox.value.scrollHeight;
+                    });
+                };
+
+                const sendMessage = async () => {
+                    const text = chatInput.value.trim();
+                    if (!text || isTyping.value) return;
+                    
+                    chatHistory.value.push({ role: 'user', parts: [{ text: text }] });
+                    chatInput.value = '';
+                    isTyping.value = true;
+                    scrollToBottom();
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                    try {
+                        const res = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                message: text,
+                                history: chatHistory.value.map(h => ({ role: h.role, parts: h.parts })) 
+                            }),
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId);
+
+                        if (!res.ok) throw new Error("Lỗi server");
+                        
+                        const data = await res.json();
+                        chatHistory.value.push({ role: 'model', parts: [{ text: data.response }] });
+
+                    } catch (e) {
+                        let errorMsg = "Lỗi kết nối.";
+                        if (e.name === 'AbortError') {
+                            errorMsg = "AI phản hồi quá lâu. Vui lòng thử lại.";
+                        }
+                        chatHistory.value.push({ 
+                            role: 'model', 
+                            parts: [{ text: "⚠️ " + errorMsg }],
+                            error: true 
+                        });
+                    } finally {
+                        isTyping.value = false;
+                        scrollToBottom();
+                    }
+                };
+
+                const formatMarkdown = (text) => {
+                    if (!text) return '';
+                    return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                };
+
+                const openLesson = (l) => activeLesson.value = l;
+                const finishLesson = () => { user.value.xp += 10; user.value.streak += 1; activeLesson.value = null; };
+                const toggleTheme = () => {
+                    user.value.theme = user.value.theme === 'dark' ? 'light' : 'dark';
+                    user.value.theme === 'dark' ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
+                    fetch('/api/user/update', { method: 'POST', body: new URLSearchParams({ theme: user.value.theme }) });
+                };
+                const toggleEdit = () => { Object.assign(editForm, user.value); isEditing.value = true; };
+                const handleFileUpload = async (e) => {
+                    const fd = new FormData(); fd.append('avatar', e.target.files[0]);
+                    const res = await fetch('/api/user/update', { method: 'POST', body: fd });
+                    const d = await res.json(); if(d.status === 'success') user.value.avatar = d.user.avatar;
+                };
+                const logout = () => location.reload();
+
+                return {
+                    currentTab, libTab, alphabet, filteredDictionary, lessons, library, user, 
+                    searchQuery, chatInput, chatHistory, isTyping, activeLesson, isEditing, editForm, chatBox,
+                    openLesson, finishLesson, formatMarkdown, sendMessage, toggleTheme, 
+                    toggleEdit, handleFileUpload, logout
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
